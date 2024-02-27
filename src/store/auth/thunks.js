@@ -4,7 +4,7 @@ import { clearNotesLogout } from "../journal/";
 import { checkingCredentials, login, logout } from "./authSlice"
 
 export const checkingAuthentication = (email, password) => {
-    console.log('thunk')
+
     return async( dispatch ) => {
 
         dispatch(checkingCredentials());
@@ -32,7 +32,6 @@ export const startCreatingUserWithEmailPassword = ({email, password, displayName
         dispatch(checkingCredentials());
 
         const {ok, uid, photoURL, errorMessage} = await registerUserWithEmailPassword( { email, password, displayName } );
-
         
         if(!ok) return dispatch( logout({ errorMessage }) );
 
@@ -48,11 +47,11 @@ export const startLoginWithEmailPassword = ({email, password}) => {
         
         dispatch(checkingCredentials());
         
-        const {ok, uid, photoURL, errorMessage, displayName} = await loginWithEmailPassword({email, password});
+        const result = await loginWithEmailPassword({email, password});
 
-        if(!ok) return dispatch(logout({errorMessage}));
+        if(!result.ok) return dispatch(logout(result));
 
-        dispatch(login({uid, email, photoURL, displayName}));
+        dispatch(login(result));
 
     }
 
@@ -64,7 +63,7 @@ export const startLogout = () => {
 
         await logOutFirebase();
         dispatch(clearNotesLogout())
-        dispatch(logout({}));
+        dispatch(logout());
 
     }
 
